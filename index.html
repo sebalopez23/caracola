@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="En Proyecto Caracola, buscamos tus historias, anécdotas, problemáticas y desafíos en torno a la costa y su sostenibilidad.">
+    <title>Proyecto Caracola</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/cover/">
+    <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/dist/css/player.css" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWST0NPMHY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWST0NPMHY');
+    </script>
+    <!--- Player -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+      body {
+        color: #fff;
+        font-size: 16px;
+        background-image: url("assets/img/fondo3.png");
+        background-size: cover;
+        background-position: 50% 0%;
+        height: 100%;
+        text-align: center;
+        font-family: 'Dona', Arial, sans-serif;
+        inset: 0px;
+        z-index: -1;
+      }
+      .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+      }
+      .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0
+      }
+    </style>
+  </head>
+<body class="d-flex h-100 text-center text-bg-dark">
+  <div class="cover-container d-flex w-100 h-100 mx-auto flex-column">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 pt-5 pb-4 img-container d-flex align-items-center justify-content-center img-fluid">
+          <img src="assets/img/Logo.png" class="logo" alt="Logo Caracola" />
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-8">
+          <h1 class="text-light text-one">
+            En Proyecto Caracola, buscamos tus historias, anécdotas,
+            problemáticas y desafíos en torno a la costa y su sostenibilidad.
+          </h1>
+        </div>
+        <div class="col-sm-12 col-md-8">
+          <br><br>
+          <p class="text-light text-two">
+            Tu relato podrá ser parte de este proyecto, el cual recogerá las vivencias de diversas personas en las zonas costeras de nuestro país.
+          </p>
+        </div>
+        <div class="col-sm-12 col-md-8">
+          <br><br>
+          <p class="text-light text-two">
+            Te invitamos a escuchar algunos testimonios que nos han compartido:
+          </p>
+        </div>
+        <div class="col-12 pb-5" id="app">
+        <a class="sound__wsp btn" v-on:click="seen = !seen"><i class="fa-solid fa-volume-high"></i></a>
+        <transition name="fade">
+          <main class="audioPlayer" v-if="seen" id="hide">
+            <a class="nav-icon" v-on:click="isPlaylistActive=!isPlaylistActive" :class="{'isActive': isPlaylistActive}" >
+              <span></span>
+              <span></span>
+              <span></span>
+            </a>
+            <a class="nav-icon-right" style="color: white;" v-on:click="seen = !seen">
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </a>
+            <div class="audioPlayerList" :class="{'isActive': isPlaylistActive}">
+              <div class="item" v-for="(item,index) in musicPlaylist" v-bind:class="{ 'isActive':isCurrentSong(index) }" v-on:click="changeSong(index),isPlaylistActive=!isPlaylistActive">
+                <p class="title">{{ item.title }}</p>
+                <p class="artist">{{ item.artist }}</p>
+              </div>
+            </div>
+            <div class="audioPlayerUI" :class="{'isDisabled': isPlaylistActive}">
+
+              <div class="albumDetails">
+                <transition name="slide-fade" mode="out-in">
+                  <p class="title" :key="currentSong">{{ musicPlaylist[currentSong].title }}</p>
+                </transition>
+                <transition name="slide-fade" mode="out-in">
+                  <p class="artist" :key="currentSong">{{ musicPlaylist[currentSong].artist }}</p>
+              </div>
+
+              <div class="playerButtons">
+                <a class="button" :class="{'isDisabled':(currentSong==0)}" v-on:click="prevSong()" title="Previous Song"><i class="zmdi zmdi-skip-previous"></i></a>
+                <a class="button play" v-on:click="playAudio()" title="Play/Pause Song">
+                  <transition name="slide-fade" mode="out-in">
+                    <i class="zmdi" :class="[currentlyStopped ? 'zmdi-stop' : (currentlyPlaying ? 'zmdi-pause-circle' : 'zmdi-play-circle')]" :key="1"></i>
+                  </transition>
+                </a>
+                <a class="button" :class="{'isDisabled':(currentSong==musicPlaylist.length-1)}" v-on:click="nextSong()" title="Next Song"><i class="zmdi zmdi-skip-next"></i></a>
+              </div>
+
+              <div class="currentTimeContainer" style="text-align:center">
+                <span class="currentTime">{{ currentTime | fancyTimeFormat }}</span>
+                <span class="totalTime"> {{ trackDuration | fancyTimeFormat }}</span>
+              </div>
+
+              <div class="currentProgressBar">
+                <div class="currentProgress" :style="{ width: currentProgressBar + '%' }"></div>
+              </div>
+            </div>
+          </main>
+        </transition> 
+      </div>
+      <div class="col-12">
+        <p class="px-5 pb-2 text-light text__three">
+          ¿Te gustaría participar?<br />
+          ¡Escríbenos y construyamos juntos ‘la voz del mar’!
+        </p>
+      </div>
+      <div class="wsp__container col-12 pb-4">
+        <a class="link__wsp btn" target="_blank" href="https://api.whatsapp.com/send/?phone=56958656997&text=¡Hola! Estoy interesado en participar en el Proyecto Caracola...&type=phone_number&app_absent=0"><b>Enviar Whatsapp</b><i class="fa-brands fa-whatsapp ps-3"></i></a>
+      </div>
+      </div>
+    </div> 
+    <footer class="mt-auto text-white">
+      <div class="container text-center">
+        <br>
+        <div class="row justify-content-center">
+          <p style="margin-top: 2rem; width: 80%;">Iniciativa del Instituto Milenio en Socio-Ecología Costera (SECOS) y Fundación Encuentros del Futuro, financiada por el programa de Proyección al Medio Externo (PME) de la Iniciativa Científica Milenio, programa de la Agencia Nacional de Investigación y Desarrollo (ANID), perteneciente al Ministerio de Ciencia, Tecnología, Conocimiento e Innovación de Chile.</p>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a href="https://www.iniciativamilenio.cl/" target="_blank">
+              <img src="assets/img/logo_Milenio.png">
+            </a>
+          </div>
+          <div class="col">
+            <a href="https://fef.cl/" target="_blank">
+              <img src="assets/img/logos-fef-03.png">
+            </a>
+          </div>
+          <div class="col">
+            <a href="https://socioecologiacostera.cl/" target="_blank">
+              <img src="assets/img/logo_Secos.png">
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+  <script src="./assets/dist/js/jquery.ripples.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js'></script>
+  <script src="https://kit.fontawesome.com/71f25bde4a.js" crossorigin="anonymous"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.7.3/feather.min.js'></script>
+  <script>
+  $(document).ready(function() {
+    if(!/Android/i.test(navigator.userAgent)){
+      try {
+        $('body').ripples({
+          resolution: 512,
+          dropRadius: 100, //px
+          perturbance: 0.04,
+        });
+      }
+      catch (e) {
+        $('.error').show().text(e);
+      }
+    }
+  });
+  var app = new Vue({
+      el: "#app",
+      data: {
+        seen: false,
+        audio: "",
+        imgLoaded: false,
+        currentlyPlaying: false,
+        currentlyStopped: false,
+        currentTime: 0,
+        checkingCurrentPositionInTrack: "",
+        trackDuration: 0,
+        currentProgressBar: 0,
+        isPlaylistActive: false,
+        currentSong: 0,
+        debug: false,
+        musicPlaylist: [
+          {
+            title: "Falta de educación en turistas",
+            artist: "Anita",
+            url: "assets/audios/Anita Queo - Falta de educación en turistas.wav",
+            image: "https://source.unsplash.com/crs2vlkSe98/400x400" },
+
+          {
+            title: "Leyes de pesca",
+            artist: "Carlos",
+            url: "assets/audios/Carlos Rivera - Leyes de pesca.wav",
+            image: "https://source.unsplash.com/35bE_njbG9E/400x400" },
+
+          {
+            title: "Parcelaciones",
+            artist: "Johana",
+            url: "assets/audios/Johana Coñuecar - Parcelaciones .wav",
+            image: "https://source.unsplash.com/Esax9RaEl2I/400x400" },
+
+          {
+            title: "Contaminación grandes industrias",
+            artist: "Yolanda",
+            url: "assets/audios/Yolanda - Contaminación grandes industrias.wav",
+            image: "https://source.unsplash.com/j0g8taxHZa0/400x400",
+          }
+        ],
+        audioFile: "" },
+
+      mounted: function () {
+        this.changeSong();
+        this.audio.loop = false;
+      },
+      filters: {
+        fancyTimeFormat: function (s) {
+          return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
+        } },
+
+      methods: {
+        togglePlaylist: function () {
+          this.isPlaylistActive = !this.isPlaylistActive;
+        },
+        nextSong: function () {
+          if (this.currentSong < this.musicPlaylist.length - 1)
+          this.changeSong(this.currentSong + 1);
+        },
+        prevSong: function () {
+          if (this.currentSong > 0) this.changeSong(this.currentSong - 1);
+        },
+        changeSong: function (index) {
+          var wasPlaying = this.currentlyPlaying;
+          this.imageLoaded = false;
+          if (index !== undefined) {
+            this.stopAudio();
+            this.currentSong = index;
+          }
+          this.audioFile = this.musicPlaylist[this.currentSong].url;
+          this.audio = new Audio(this.audioFile);
+          var localThis = this;
+          this.audio.addEventListener("loadedmetadata", function () {
+            localThis.trackDuration = Math.round(this.duration);
+          });
+          this.audio.addEventListener("ended", this.handleEnded);
+          if (wasPlaying) {
+            this.playAudio();
+          }
+        },
+        isCurrentSong: function (index) {
+          if (this.currentSong == index) {
+            return true;
+          }
+          return false;
+        },
+        getCurrentSong: function (currentSong) {
+          return this.musicPlaylist[currentSong].url;
+        },
+        playAudio: function () {
+          if (
+          this.currentlyStopped == true &&
+          this.currentSong + 1 == this.musicPlaylist.length)
+          {
+            this.currentSong = 0;
+            this.changeSong();
+          }
+          if (!this.currentlyPlaying) {
+            this.getCurrentTimeEverySecond(true);
+            this.currentlyPlaying = true;
+            this.audio.play();
+          } else {
+            this.stopAudio();
+          }
+          this.currentlyStopped = false;
+        },
+        stopAudio: function () {
+          this.audio.pause();
+          this.currentlyPlaying = false;
+          this.pausedMusic();
+        },
+        handleEnded: function () {
+          if (this.currentSong + 1 == this.musicPlaylist.length) {
+            this.stopAudio();
+            this.currentlyPlaying = false;
+            this.currentlyStopped = true;
+          } else {
+            this.currentlyPlaying = false;
+            this.currentSong++;
+            this.changeSong();
+            this.playAudio();
+          }
+        },
+        onImageLoaded: function () {
+          this.imgLoaded = true;
+        },
+        getCurrentTimeEverySecond: function (startStop) {
+          var localThis = this;
+          this.checkingCurrentPositionInTrack = setTimeout(
+          function () {
+            localThis.currentTime = localThis.audio.currentTime;
+            localThis.currentProgressBar =
+            localThis.audio.currentTime / localThis.trackDuration * 100;
+            localThis.getCurrentTimeEverySecond(true);
+          }.bind(this),
+          1000);
+
+        },
+        pausedMusic: function () {
+          clearTimeout(this.checkingCurrentPositionInTrack);
+        },
+        toggleDebug: function () {
+          this.debug = !this.debug;
+          document.body.classList.toggle('debug');
+        } },
+
+      watch: {
+        currentTime: function () {
+          this.currentTime = Math.round(this.currentTime);
+        } },
+
+      beforeDestroy: function () {
+        this.audio.removeEventListener("ended", this.handleEnded);
+        this.audio.removeEventListener("loadedmetadata", this.handleEnded);
+
+        clearTimeout(this.checkingCurrentPositionInTrack);
+      } 
+    });
+  </script>
+</body>
+</html>
